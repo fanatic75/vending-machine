@@ -1,12 +1,12 @@
 from fastapi.testclient import TestClient
 from src.app.users.user_schema import Role
-from src.tests.utils.utils import makeRequest, register_login_user, login_delete_user
+from src.tests.utils.utils import makeRequest, register_login_user, login_delete_user, generate_random_word
 from src.main import app
 import pytest
 
 client = TestClient(app)
 
-username = "test1"
+username = generate_random_word(7)
 password = "password"
 
 def test_create_product():
@@ -203,8 +203,8 @@ def test_update_product_invalid_owner():
     assert access_token is not None
     product = create_product("product", 10, "description", 10, access_token)
     assert product is not None
-
-    access_token = register_login_user(client, "test2", password, Role.seller.value)
+    new_username = generate_random_word(7)
+    access_token = register_login_user(client, new_username, password, Role.seller.value)
     assert access_token is not None
 
     r = makeRequest(
@@ -223,7 +223,7 @@ def test_update_product_invalid_owner():
     assert r.status_code == 404
     assert "detail" in r.json()
     assert r.json()["detail"] == "Product not found"
-    login_delete_user(client, "test2", password)
+    login_delete_user(client, new_username, password)
 
 def test_update_product_invalid_price():
     access_token = register_login_user(client, username, password, Role.seller.value)
@@ -284,8 +284,8 @@ def test_delete_product_invalid_owner():
     assert access_token is not None
     product = create_product("product", 10, "description", 10, access_token)
     assert product is not None
-
-    access_token = register_login_user(client, "test2", password, Role.seller.value)
+    new_username = generate_random_word(7)
+    access_token = register_login_user(client, new_username, password, Role.seller.value)
     assert access_token is not None
 
     r = makeRequest(
@@ -298,7 +298,7 @@ def test_delete_product_invalid_owner():
     assert r.status_code == 404
     assert "detail" in r.json()
     assert r.json()["detail"] == "Product not found"
-    login_delete_user(client, "test2", password)
+    login_delete_user(client, new_username, password)
 
 def test_buy_product():
     access_token = register_login_user(client, username, password, Role.seller.value)
@@ -306,7 +306,8 @@ def test_buy_product():
     product = create_product("product", 10, "description", 10, access_token)
     assert product is not None
 
-    access_token = register_login_user(client, "test2", password, Role.buyer.value)
+    new_username = generate_random_word(7)
+    access_token = register_login_user(client, new_username, password, Role.buyer.value)
     assert access_token is not None
 
     r = makeRequest(
@@ -329,7 +330,7 @@ def test_buy_product():
     )
 
     assert r.status_code == 200
-    assert r.json()['username'] == "test2"
+    assert r.json()['username'] == new_username
     assert r.json()['balance'] == 40
     assert len(r.json()['products']) == 1
     assert r.json()['products'][0]['title'] == "product"
@@ -337,7 +338,7 @@ def test_buy_product():
     assert r.json()['products'][0]['description'] == "description"
     assert r.json()['products'][0]['total_spent_on_product'] == 10
     assert r.json()['products'][0]['total_quantity_bought'] == 1
-    login_delete_user(client, "test2", password)
+    login_delete_user(client, new_username, password)
 
 def test_buy_product_invalid_id():
     access_token = register_login_user(client, username, password, Role.seller.value)
@@ -345,7 +346,8 @@ def test_buy_product_invalid_id():
     product = create_product("product", 10, "description", 10, access_token)
     assert product is not None
 
-    access_token = register_login_user(client, "test2", password, Role.buyer.value)
+    new_username = generate_random_word(7)
+    access_token = register_login_user(client, new_username, password, Role.buyer.value)
     assert access_token is not None
 
     r = makeRequest(
@@ -370,7 +372,7 @@ def test_buy_product_invalid_id():
     assert r.status_code == 404
     assert "detail" in r.json()
     assert r.json()["detail"] == "Product not found or insufficient balance"
-    login_delete_user(client, "test2", password)
+    login_delete_user(client, new_username, password)
 
 def test_buy_product_invalid_quantity():
     access_token = register_login_user(client, username, password, Role.seller.value)
@@ -378,7 +380,8 @@ def test_buy_product_invalid_quantity():
     product = create_product("product", 10, "description", 10, access_token)
     assert product is not None
 
-    access_token = register_login_user(client, "test2", password, Role.buyer.value)
+    new_username = generate_random_word(7)
+    access_token = register_login_user(client, new_username, password, Role.buyer.value)
     assert access_token is not None
 
     r = makeRequest(
@@ -403,7 +406,7 @@ def test_buy_product_invalid_quantity():
     assert r.status_code == 404
     assert "detail" in r.json()
     assert r.json()["detail"] == "Product not found or insufficient balance"
-    login_delete_user(client, "test2", password)
+    login_delete_user(client, new_username, password)
 
 def test_buy_product_insufficient_balance():
     access_token = register_login_user(client, username, password, Role.seller.value)
@@ -411,7 +414,8 @@ def test_buy_product_insufficient_balance():
     product = create_product("product", 20, "description", 10, access_token)
     assert product is not None
 
-    access_token = register_login_user(client, "test2", password, Role.buyer.value)
+    new_username = generate_random_word(7)
+    access_token = register_login_user(client, new_username, password, Role.buyer.value)
     assert access_token is not None
 
     r = makeRequest(
@@ -436,7 +440,7 @@ def test_buy_product_insufficient_balance():
     assert r.status_code == 404
     assert "detail" in r.json()
     assert r.json()["detail"] == "Product not found or insufficient balance"
-    login_delete_user(client, "test2", password)
+    login_delete_user(client, new_username, password)
 
 def test_partial_buy_product():
     access_token = register_login_user(client, username, password, Role.seller.value)
@@ -444,7 +448,8 @@ def test_partial_buy_product():
     product = create_product("product", 20, "description", 10, access_token)
     assert product is not None
 
-    access_token = register_login_user(client, "test2", password, Role.buyer.value)
+    new_username = generate_random_word(7)
+    access_token = register_login_user(client, new_username, password, Role.buyer.value)
     assert access_token is not None
 
     r = makeRequest(
@@ -469,7 +474,7 @@ def test_partial_buy_product():
     assert r.status_code == 404
     assert "detail" in r.json()
     assert r.json()["detail"] == "Product not found or insufficient balance"
-    login_delete_user(client, "test2", password)
+    login_delete_user(client, new_username, password)
 
 def test_partial_buy_product_with_higher_balance():
     access_token = register_login_user(client, username, password, Role.seller.value)
@@ -477,7 +482,8 @@ def test_partial_buy_product_with_higher_balance():
     product = create_product("product", 20, "description", 3, access_token)
     assert product is not None
 
-    access_token = register_login_user(client, "test2", password, Role.buyer.value)
+    new_username = generate_random_word(7)
+    access_token = register_login_user(client, new_username, password, Role.buyer.value)
     assert access_token is not None
 
     r = makeRequest(
@@ -500,7 +506,7 @@ def test_partial_buy_product_with_higher_balance():
     )
 
     assert r.status_code == 200
-    assert r.json()['username'] == "test2"
+    assert r.json()['username'] == new_username
     assert r.json()['balance'] == 40
     assert len(r.json()['products']) == 1
     assert r.json()['products'][0]['title'] == "product"
@@ -508,7 +514,7 @@ def test_partial_buy_product_with_higher_balance():
     assert r.json()['products'][0]['description'] == "description"
     assert r.json()['products'][0]['total_spent_on_product'] == 60
     assert r.json()['products'][0]['total_quantity_bought'] == 3
-    login_delete_user(client, "test2", password)
+    login_delete_user(client, new_username, password)
 
 def test_buy_multiple_products():
     access_token = register_login_user(client, username, password, Role.seller.value)
@@ -518,7 +524,8 @@ def test_buy_multiple_products():
     product2 = create_product("product2", 20, "description", 10, access_token)
     assert product2 is not None
 
-    access_token = register_login_user(client, "test2", password, Role.buyer.value)
+    new_username = generate_random_word(7)
+    access_token = register_login_user(client, new_username, password, Role.buyer.value)
     assert access_token is not None
 
     r = makeRequest(
@@ -541,7 +548,7 @@ def test_buy_multiple_products():
     )
 
     assert r.status_code == 200
-    assert r.json()['username'] == "test2"
+    assert r.json()['username'] == new_username
     assert r.json()['balance'] == 90
     assert len(r.json()['products']) == 1
     assert r.json()['products'][0]['title'] == "product1"
@@ -558,7 +565,7 @@ def test_buy_multiple_products():
     )
 
     assert r.status_code == 200
-    assert r.json()['username'] == "test2"
+    assert r.json()['username'] == new_username
     assert r.json()['balance'] == 70
     assert len(r.json()['products']) == 2
     assert r.json()['products'][0]['title'] == "product1"
@@ -571,7 +578,7 @@ def test_buy_multiple_products():
     assert r.json()['products'][1]['description'] == "description"
     assert r.json()['products'][1]['total_spent_on_product'] == 20
     assert r.json()['products'][1]['total_quantity_bought'] == 1
-    login_delete_user(client, "test2", password)
+    login_delete_user(client, new_username, password)
 
 
 #Developer functions

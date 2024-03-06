@@ -1,12 +1,12 @@
 from fastapi.testclient import TestClient
 from src.app.users.user_schema import Role
-from src.tests.utils.utils import makeRequest, login_delete_user, register_login_user
+from src.tests.utils.utils import makeRequest, login_delete_user, register_login_user, generate_random_word
 from src.main import app
 import pytest
 
 client = TestClient(app)
 
-username = "test"
+username = generate_random_word(10)
 password = "password"
 
 
@@ -121,7 +121,7 @@ def test_login_update_user():
     access_token = register_login_user(client,username, password)
     assert access_token is not None
 
-    new_username = "new_test"
+    new_username = generate_random_word(10)
     new_password = "new_password"
 
     r = makeRequest(

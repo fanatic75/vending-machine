@@ -1,3 +1,5 @@
+import random
+import string
 from fastapi.testclient import TestClient
 from src.app.users.user_schema import Role
 from src.core.config import settings
@@ -53,3 +55,7 @@ def login_delete_user(client: TestClient, username: str, password: str):
     r = makeRequest(
         client, "delete", "users/", headers={"Authorization": f"Bearer {access_token}"}
     )
+
+def generate_random_word(length):
+    letters = string.ascii_lowercase
+    return ''.join(random.choice(letters) for _ in range(length))
