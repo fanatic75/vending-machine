@@ -112,6 +112,7 @@ def buy_product(product_id: int, quantity: int, user_id: int, db: Session):
                     up.user_id = :user_id
                 GROUP BY
                     p.id, p.title, p.price, u.balance, u.username, u.id
+                order by p.id
                 """
             )
             data = db.execute(query, {"user_id": user.id}).fetchall()
