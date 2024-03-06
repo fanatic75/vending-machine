@@ -1,8 +1,5 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import HTTPException
 from pydantic import BaseModel, validator
-
-app = FastAPI()
-
 
 class CoinsValidation(BaseModel):
     denomination: int

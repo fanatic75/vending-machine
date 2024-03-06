@@ -1,6 +1,6 @@
 from fastapi.testclient import TestClient
 from src.app.users.user_schema import Role
-from src.tests.utils.utils import makeRequest, login_delete_user, register_login_user, generate_random_word
+from tests.utils.utils import makeRequest, login_delete_user, register_login_user, generate_random_word
 from src.main import app
 import pytest
 
